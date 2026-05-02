@@ -7,3 +7,5 @@ models/*.pkl
 Thumbs.db
 .vscode/
 .idea/
+*.png
+!figures/*.png
