@@ -225,3 +225,62 @@ for classe, proba in zip(model_loaded.classes_, probas):
 print("\n" + "=" * 50)
 print("LAB 2 TERMINE ! Fichiers dans models/")
 print("=" * 50)
+
+# ============================================================
+# EXERCICE 1 : Importance des features
+# ============================================================
+print("\n" + "=" * 50)
+print("EXERCICE 1 : Importance des features")
+print("=" * 50)
+
+importances = model.feature_importances_
+print("Features classees par importance :")
+for name, imp in sorted(zip(feature_cols, importances),
+                        key=lambda x: x[1], reverse=True):
+    bar = '#' * int(imp * 50)
+    print(f"  {name:20s} : {imp:.3f} {bar}")
+
+# ============================================================
+# EXERCICE 2 : Tester avec 3 autres patients
+# ============================================================
+print("\n" + "=" * 50)
+print("EXERCICE 2 : Test avec 3 patients fictifs")
+print("=" * 50)
+
+patients = [
+    {
+        'nom': 'Patient 1 - Jeune sans symptomes',
+        'age': 18, 'sexe': 'M', 'temperature': 37.0,
+        'tension_sys': 120, 'toux': False, 'fatigue': False,
+        'maux_tete': False, 'region': 'Dakar'
+    },
+    {
+        'nom': 'Patient 2 - Adulte forte fievre',
+        'age': 45, 'sexe': 'F', 'temperature': 40.5,
+        'tension_sys': 130, 'toux': True, 'fatigue': True,
+        'maux_tete': True, 'region': 'Thies'
+    },
+    {
+        'nom': 'Patient 3 - Age avec toux',
+        'age': 67, 'sexe': 'M', 'temperature': 38.8,
+        'tension_sys': 95, 'toux': True, 'fatigue': True,
+        'maux_tete': False, 'region': 'Diourbel'
+    },
+]
+
+for p in patients:
+    sexe_enc   = le_sexe_loaded.transform([p['sexe']])[0]
+    region_enc = le_region_loaded.transform([p['region']])[0]
+
+    features = pd.DataFrame([[
+        p['age'], sexe_enc, p['temperature'], p['tension_sys'],
+        int(p['toux']), int(p['fatigue']), int(p['maux_tete']), region_enc
+    ]], columns=feature_cols)
+
+    diag  = model_loaded.predict(features)[0]
+    proba = model_loaded.predict_proba(features)[0].max()
+
+    print(f"\n{p['nom']}")
+    print(f"  Age        : {p['age']} ans | Sexe : {p['sexe']}")
+    print(f"  Temperature: {p['temperature']}°C")
+    print(f"  Diagnostic : {diag} ({proba:.1%})")
