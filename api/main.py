@@ -1,4 +1,7 @@
 # api/main.py
+# SenSante API - Assistant pre-diagnostic medical
+# Lab 3 - Integration de Modeles IA - ESP/UCAD
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import joblib
@@ -25,9 +28,19 @@ class DiagnosticOutput(BaseModel):
 
 # --- Application FastAPI ---
 app = FastAPI(
+    
     title="SenSante API",
     description="Assistant pré-diagnostic médical pour le Sénégal",
     version="0.2.0"
+)
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- Chargement du modèle ---
@@ -42,10 +55,22 @@ print(f"Classes : {list(model.classes_)}")
 # --- Routes ---
 @app.get("/health")
 def health_check():
+    """Vérification de l'état de l'API."""
     return {"status": "ok", "message": "SenSante API is running"}
+
+@app.get("/model-info")
+def model_info():
+    """Informations sur le modèle chargé."""
+    return {
+        "type":         type(model).__name__,
+        "n_estimators": model.n_estimators,
+        "classes":      list(model.classes_),
+        "n_features":   model.n_features_in_
+    }
 
 @app.post("/predict", response_model=DiagnosticOutput)
 def predict(patient: PatientInput):
+    """Prédire un diagnostic à partir des symptômes d'un patient."""
     try:
         sexe_enc = le_sexe.transform([patient.sexe])[0]
     except ValueError:
