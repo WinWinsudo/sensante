@@ -239,11 +239,19 @@
           </div>
         </div>`;
 
-      // NOUVEAU Lab 5 : appeler /explain automatiquement
       demanderExplication(r);
     }
 
     async function demanderExplication(diagnostic_data) {
+
+      // EXERCICE 3 - Modification 1 : confirmation avant affichage
+      const confirme = confirm(
+        "L'explication qui va s'afficher est generee par une IA.\n" +
+        "Elle ne remplace pas une consultation medicale.\n\n" +
+        "Voulez-vous continuer ?"
+      );
+      if (!confirme) return;
+
       const explainData = {
         diagnostic: diagnostic_data.diagnostic,
         probabilite: diagnostic_data.probabilite,
@@ -272,10 +280,19 @@
 
         if (response.ok) {
           const result = await response.json();
+
+          // EXERCICE 3 - Modification 2 : avertissement rouge sous l'explication
           explDiv.innerHTML = `
             <div class="mt-4 bg-purple-50 rounded-lg p-4 border border-purple-200">
               <p class="text-sm text-purple-600 font-medium mb-2">Explication (Llama 3)</p>
               <p class="text-gray-700 text-sm leading-relaxed">${result.explication}</p>
+            </div>
+            <div class="mt-2 bg-red-50 rounded-lg p-3 border border-red-200">
+              <p class="text-red-600 text-xs font-medium">
+                ⚠️ Cette explication est generee par une IA. 
+                Elle ne remplace pas l'avis d'un medecin. 
+                Consultez toujours un professionnel de sante.
+              </p>
             </div>`;
         }
       } catch (error) {

@@ -128,13 +128,13 @@ def predict(patient: PatientInput):
 # --- Endpoint /explain ---
 SYSTEM_PROMPT = """Tu es un assistant medical senegalais.
 Tu recois un diagnostic et des donnees patient.
-Explique le resultat en francais simple,
-comme un medecin parlerait a son patient.
+Explique le resultat en melant le francais et des mots wolof courants
+comme : dafa (c'est), baxna (c'est bien), dem (aller), xam (savoir),
+soppeku (consulter), ndaw (petit), mag (grand), yaram (corps).
 Sois rassurant mais recommande toujours une consultation medicale.
 Maximum 3 phrases.
 Ne fais JAMAIS de diagnostic toi-meme.
 Tu expliques uniquement le diagnostic fourni."""
-
 @app.post("/explain", response_model=ExplainOutput)
 def explain(data: ExplainInput):
     if not groq_client:
