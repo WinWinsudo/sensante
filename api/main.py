@@ -1,5 +1,7 @@
 # api/main.py
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 import joblib
 import numpy as np
@@ -52,7 +54,7 @@ class ExplainOutput(BaseModel):
 app = FastAPI(
     title="SenSante API",
     description="Assistant pré-diagnostic médical pour le Sénégal",
-    version="0.3.0"
+    version="0.4.0"
 )
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -135,6 +137,7 @@ Sois rassurant mais recommande toujours une consultation medicale.
 Maximum 3 phrases.
 Ne fais JAMAIS de diagnostic toi-meme.
 Tu expliques uniquement le diagnostic fourni."""
+
 @app.post("/explain", response_model=ExplainOutput)
 def explain(data: ExplainInput):
     if not groq_client:
@@ -165,3 +168,10 @@ def explain(data: ExplainInput):
         explication = f"Erreur lors de l'appel au LLM : {str(e)}"
 
     return ExplainOutput(explication=explication)
+
+# --- Servir le frontend ---
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+@app.get("/")
+def serve_frontend():
+    return FileResponse("frontend/index.html")

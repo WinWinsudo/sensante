@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 venv/
+.venv/
 .env
 models/*.pkl
 .DS_Store
@@ -9,4 +10,3 @@ Thumbs.db
 .idea/
 *.png
 !figures/*.png
-.env
